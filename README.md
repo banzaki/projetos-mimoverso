@@ -29,3 +29,6 @@ Ferramenta do Mimoverso: você pede um bichinho em palavras e recebe um arquivo 
 ## Estrutura
 `studio/` (formas, conferência, prévia) · `examples/` (o sapinho) · `CLAUDE.md` (instruções para a IA da Bia) · `requirements.txt`.
 Código e nomes em inglês; textos para a Bia em português.
+
+## Escultura suave (`studio/clay.py`)
+`python examples/sapinho_fofo.py --size 60` gera o sapinho em "massinha": um volume único com junções suaves e malha fina (passo de 0,3 mm), sem serrilhado nas emendas. As proporções (cabeça, olhos, chifres, bochechas, sorriso) são números no topo do arquivo.
