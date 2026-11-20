@@ -12,6 +12,9 @@ Ferramenta do Mimoverso: vocÃª pede um bichinho em palavras e recebe um arquivo 
 4. **Abra `out/sapinho.stl` no Bambu Studio.** Ã‰ o teste que decide: fatia sem aviso? Quanto tempo e quanto filamento?
 5. PeÃ§a um bicho novo, copiando o exemplo. Um de cada vez.
 
+## Estilos (mesmo bicho, públicos diferentes)
+`python examples/sapinho.py --style cute --size 60` (fofo) ou `--style edgy` (pontudo, mal-humorado). Um estilo é só um conjunto de números em `STYLES`; novos estilos são novas linhas. `--size 90` muda o tamanho.
+
 ## Etapas
 | # | O que | Pronto quando |
 |---|---|---|
