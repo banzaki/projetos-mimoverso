@@ -71,7 +71,7 @@ class Clay:
             self.D[:, :, k] = np.minimum(self.D[:, :, k], (sd + reach).astype(np.float32))
 
     def to_mesh(self, height_mm, smooth_iters=10):
-        D = np.maximum(self.D, -self.Z)                  # flat base at Z = 0
+        D = np.maximum(self.D, -self.Z - 0.013)                  # flat base at Z = 0
         D = np.pad(D, 1, constant_values=1e3)            # close the mesh at the grid border
         v, f, _, _ = measure.marching_cubes(D, level=0.0, spacing=(self.step,) * 3)
         m = trimesh.Trimesh(v + self.origin - self.step, f, process=False)
@@ -81,6 +81,7 @@ class Clay:
         trimesh.smoothing.filter_taubin(m, iterations=smooth_iters)
         b = m.bounds
         m.apply_translation((-(b[0][0] + b[1][0]) / 2, -(b[0][1] + b[1][1]) / 2, -b[0][2]))
-        m.apply_scale(height_mm / m.extents[2])
+        if height_mm:
+            m.apply_scale(height_mm / m.extents[2])
         self.crumbs = len(parts) - 1
         return m
