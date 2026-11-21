@@ -28,6 +28,14 @@ class Clay:
         d = np.sqrt((self.X - a[0] - t * ab[0]) ** 2 + (self.Y - a[1] - t * ab[1]) ** 2 + (self.Z - a[2] - t * ab[2]) ** 2)
         return d - (ra + t * (rb - ra))
 
+    def _box(self, c, half, r=2.0):
+        """Rounded box: centre c, half sizes, corner radius r."""
+        qx = np.abs(self.X - c[0]) - (half[0] - r)
+        qy = np.abs(self.Y - c[1]) - (half[1] - r)
+        qz = np.abs(self.Z - c[2]) - (half[2] - r)
+        outside = np.sqrt(np.maximum(qx, 0) ** 2 + np.maximum(qy, 0) ** 2 + np.maximum(qz, 0) ** 2)
+        return outside + np.minimum(np.maximum(qx, np.maximum(qy, qz)), 0) - r
+
     @staticmethod
     def _smin(a, b, k):
         h = np.clip(0.5 + 0.5 * (b - a) / k, 0, 1)
