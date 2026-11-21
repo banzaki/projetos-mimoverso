@@ -1,29 +1,33 @@
 """Printability report for an STL (FDM). Usage: python -m studio.printability file.stl [...]
-Estimates only: the slicer has the final word."""
+Estimates only: the slicer has the final word. Every number comes from printer_profile.json."""
+import json
 import sys
+from pathlib import Path
 import numpy as np
 import trimesh
 
-PLA = 1.24          # g/cm3 (typical PLA density, assumption)
-WALL = 0.8          # mm, 2 walls with a 0.4 mm nozzle (assumption)
-INFILL = 0.15       # 15 % infill (assumption)
+PROFILE = json.loads((Path(__file__).parent / "printer_profile.json").read_text(encoding="utf-8"))
 
 
-def report(path, max_deg=45.0):
+def report(path, profile=PROFILE):
     m = trimesh.load(path)
     n, a = m.face_normals, m.area_faces
     zc = m.triangles_center[:, 2]
     base = (zc < 0.05) & (n[:, 2] < -0.99)
-    limit = -np.sin(np.radians(max_deg))            # face tilts below horizontal more than allowed
-    over = (n[:, 2] < limit) & ~base
+    max_deg = profile["max_overhang_deg"]
+    over = (n[:, 2] < -np.sin(np.radians(max_deg))) & ~base   # faces tilting below horizontal more than allowed
     steep = (n[:, 2] < -np.sin(np.radians(60))) & ~base
-    shell = min(m.area * WALL, m.volume)
-    grams = (shell + INFILL * (m.volume - shell)) / 1000 * PLA
-    print(path)
+    wall = profile["walls"] * profile["nozzle_mm"]
+    shell = min(m.area * wall, m.volume)
+    grams = (shell + profile["infill"] * (m.volume - shell)) / 1000 * profile["filament_density_g_cm3"]
+    cost = grams / 1000 * profile["filament_price_per_kg"]
+    print(path, f"(profile: {profile['status']}, printer: {profile['printer']})")
     print(f"  height {m.extents[2]:.1f} mm | base contact {a[base].sum():.0f} mm2")
     print(f"  overhang beyond {max_deg:.0f} deg: {a[over].sum():.0f} mm2 ({100 * a[over].sum() / m.area:.1f} % of surface)"
           f" | beyond 60 deg: {a[steep].sum():.0f} mm2")
-    print(f"  estimated weight: {grams:.1f} g (2 walls, 15 % infill, PLA; solid would be {m.volume / 1000 * PLA:.1f} g)")
+    print(f"  estimated weight: {grams:.1f} g ({profile['walls']} walls, {profile['infill'] * 100:.0f} % infill)"
+          f" | filament cost about {cost:.2f} {profile['currency']} (no supports, no failures)")
+    return grams
 
 
 if __name__ == "__main__":

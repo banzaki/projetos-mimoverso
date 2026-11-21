@@ -1,0 +1,19 @@
+{
+  "_note": "Every print number the studio uses lives here. Values marked provisional come from general FDM guides, not from a real printer. The calibration print replaces them.",
+  "status": "provisional",
+  "printer": "unknown",
+  "nozzle_mm": 0.4,
+  "layer_height_mm": 0.2,
+  "max_overhang_deg": 45,
+  "min_wall_mm": 0.8,
+  "safe_wall_mm": 1.2,
+  "min_detail_mm": 1.2,
+  "max_bridge_mm": 10,
+  "moving_clearance_mm": 0.25,
+  "keyring_hole_mm": 4.0,
+  "walls": 2,
+  "infill": 0.15,
+  "filament_density_g_cm3": 1.24,
+  "filament_price_per_kg": 100.0,
+  "currency": "BRL"
+}
