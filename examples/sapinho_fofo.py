@@ -17,7 +17,7 @@ CHEEK = 1.0              # 0 = no cheeks
 SMILE = 3.0              # mouth curve (negative = grumpy)
 
 
-def build(size_mm=SIZE_MM, step=0.3):
+def build(size_mm=SIZE_MM, step=0.3, no_supports=True):
     c = Clay((-34, -28, -1), (34, 26, 66), step)
     hx, hy, hz = HEAD
     head_z = 33
@@ -42,15 +42,18 @@ def build(size_mm=SIZE_MM, step=0.3):
         x, z = t * 6.5, head_z - 6 + SMILE * t * t
         pts.append((x, front_y(x, z) - 0.2, z))
     c.groove(pts, 1.0, soft=0.8)
+    if no_supports:
+        c.self_support(40)
     return c.to_mesh(size_mm)
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--size", type=float, default=SIZE_MM)
+    ap.add_argument("--raw", action="store_true", help="keep overhangs (needs supports)")
     a = ap.parse_args()
     out = Path("out"); out.mkdir(exist_ok=True)
-    name = out / f"sapinho-fofo-{a.size:g}mm.stl"
-    m = build(a.size)
+    name = out / f"sapinho-fofo-{a.size:g}mm{'-raw' if a.raw else ''}.stl"
+    m = build(a.size, no_supports=not a.raw)
     m.export(name)
     print("wrote", name, len(m.faces), "triangles")

@@ -56,6 +56,20 @@ class Clay:
         self.carve(d, soft)
 
     # --- output -------------------------------------------------------------
+    def self_support(self, max_overhang_deg=45.0):
+        """Fill under overhangs so every layer rests on the one below (prints without supports).
+        Goes from the top layer down: the layer below must contain the layer above, shrunk by
+        what the allowed overhang angle can bridge."""
+        from scipy import ndimage
+        reach = self.step * np.tan(np.radians(max_overhang_deg))
+        for k in range(self.D.shape[2] - 2, -1, -1):
+            above = self.D[:, :, k + 1] < 0
+            if not above.any():
+                continue
+            # signed horizontal distance to the outline of the layer above (mm)
+            sd = np.where(above, 0.5 - ndimage.distance_transform_edt(above), ndimage.distance_transform_edt(~above) - 0.5) * self.step
+            self.D[:, :, k] = np.minimum(self.D[:, :, k], (sd + reach).astype(np.float32))
+
     def to_mesh(self, height_mm, smooth_iters=10):
         D = np.maximum(self.D, -self.Z)                  # flat base at Z = 0
         D = np.pad(D, 1, constant_values=1e3)            # close the mesh at the grid border

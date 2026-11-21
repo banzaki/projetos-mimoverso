@@ -32,3 +32,6 @@ Código e nomes em inglês; textos para a Bia em português.
 
 ## Escultura suave (`studio/clay.py`)
 `python examples/sapinho_fofo.py --size 60` gera o sapinho em "massinha": um volume único com junções suaves e malha fina (passo de 0,3 mm), sem serrilhado nas emendas. As proporções (cabeça, olhos, chifres, bochechas, sorriso) são números no topo do arquivo.
+
+## Antes de imprimir
+`python -m studio.printability out/<arquivo>.stl` mostra a área de saliências (acima de 45° pede suporte), a área de base e uma estimativa de peso. O exemplo já sai com `self_support`, que preenche por baixo do queixo para imprimir sem suporte (`--raw` desliga). É estimativa: o fatiador tem a palavra final.
